@@ -1,0 +1,419 @@
+<!DOCTYPE html>
+<html lang="th">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>เกี่ยวกับเรา - HygieGo เพื่อนคู่คิด Street Food</title>
+
+    <link href="https://fonts.googleapis.com/css2?family=Prompt:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+
+    <link rel="stylesheet" href="style.css">
+
+    <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+    <script src="script.js"></script>
+
+    <style>
+        /* --- Page Specific Styles --- */
+        :root {
+            --gov-blue: #003087;
+            /* สีน้ำเงินราชการ */
+            --cert-gold: #D4AF37;
+            /* สีทองใบประกาศ */
+        }
+
+        body {
+            background-color: #f9f9f9;
+        }
+
+        /* Hero Section */
+        .about-hero {
+            /* รูปพื้นหลังเป็น Street Food ที่สะอาด สวยงาม */
+            background: linear-gradient(rgba(0, 43, 54, 0.85), rgba(0, 43, 54, 0.7)),
+                url('https://images.unsplash.com/photo-1559339352-11d035aa65de?auto=format&fit=crop&q=80&w=1200');
+            background-size: cover;
+            background-position: center;
+            padding: 120px 20px 100px;
+            text-align: center;
+            color: white;
+            position: relative;
+        }
+
+        .cert-badge {
+            background: linear-gradient(135deg, #FFD700, #FDB931);
+            color: #000;
+            padding: 10px 25px;
+            border-radius: 50px;
+            font-weight: bold;
+            display: inline-flex;
+            align-items: center;
+            gap: 10px;
+            box-shadow: 0 0 20px rgba(255, 215, 0, 0.4);
+            margin-bottom: 20px;
+            text-transform: uppercase;
+            font-size: 0.9rem;
+        }
+
+        /* Gov Partner Section */
+        .partner-bar {
+            background: white;
+            padding: 40px 20px;
+            margin-top: -60px;
+            position: relative;
+            z-index: 10;
+            border-radius: 15px;
+            box-shadow: 0 15px 30px rgba(0, 0, 0, 0.08);
+            max-width: 1000px;
+            margin-left: auto;
+            margin-right: auto;
+            text-align: center;
+        }
+
+        .partner-logos {
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            gap: 50px;
+            flex-wrap: wrap;
+            margin-top: 20px;
+            opacity: 0.8;
+        }
+
+        .partner-item {
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            gap: 10px;
+        }
+
+        .partner-item i {
+            font-size: 3rem;
+            color: var(--gov-blue);
+        }
+
+        /* Process Section */
+        .process-section {
+            padding: 80px 20px;
+            text-align: center;
+        }
+
+        .process-grid {
+            display: grid;
+            grid-template-columns: repeat(3, 1fr);
+            gap: 30px;
+            max-width: 1100px;
+            margin: 50px auto 0;
+        }
+
+        .process-card {
+            background: white;
+            padding: 40px 20px;
+            border-radius: 20px;
+            position: relative;
+            transition: 0.3s;
+            border: 1px solid #eee;
+        }
+
+        .process-card:hover {
+            transform: translateY(-10px);
+            box-shadow: 0 20px 40px rgba(0, 0, 0, 0.1);
+            border-color: var(--primary-teal);
+        }
+
+        .step-num {
+            position: absolute;
+            top: -20px;
+            left: 50%;
+            transform: translateX(-50%);
+            width: 50px;
+            height: 50px;
+            background: var(--primary-teal);
+            color: white;
+            font-size: 1.5rem;
+            font-weight: bold;
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            border: 4px solid white;
+            box-shadow: 0 5px 15px rgba(0, 0, 0, 0.1);
+        }
+
+        /* Mission Section */
+        .mission-box {
+            background: #fff;
+            max-width: 1200px;
+            margin: 0 auto 80px;
+            display: flex;
+            border-radius: 30px;
+            overflow: hidden;
+            box-shadow: 0 20px 50px rgba(0, 0, 0, 0.05);
+        }
+
+        .mission-content {
+            padding: 60px;
+            flex: 1;
+        }
+
+        .mission-img {
+            flex: 1;
+            background: url('https://images.unsplash.com/photo-1567121938596-3d6802492496?auto=format&fit=crop&q=80&w=800') center/cover;
+            min-height: 400px;
+        }
+
+        /* Certificate Guarantee */
+        .guarantee-section {
+            background: var(--gov-blue);
+            color: white;
+            padding: 60px 20px;
+            text-align: center;
+        }
+
+        /* Responsive */
+        @media (max-width: 768px) {
+            .process-grid {
+                grid-template-columns: 1fr;
+                gap: 50px;
+            }
+
+            .mission-box {
+                flex-direction: column-reverse;
+            }
+
+            .partner-logos {
+                gap: 30px;
+            }
+        }
+    </style>
+</head>
+
+<body>
+
+    <nav class="navbar" id="main-nav">
+        <div class="nav-container">
+            <div class="logo">
+                <a href="index.html" style="text-decoration:none; color:white;">
+                    <i class="fas fa-shield-alt"></i> HygieGo
+                </a>
+            </div>
+            <div class="nav-links">
+                <div class="nav-links">
+                    <a href="index.html">หน้าหลัก</a>
+                    <a href="about.html">เกี่ยวกับเรา</a>
+                    <a href="portfolio.html">ผลงาน</a>
+                    <a href="services.html">บริการของเรา</a>
+                    <a href="pricing.html">แพ็คเกจราคา</a>
+                    <a href="https://line.me/R/ti/p/@811cltri" target="_blank" style="color:#00B900; font-weight:bold;">
+                        <i class="fab fa-line"></i> ติดต่อสอบถาม
+                    </a>
+                </div>
+                <div class="nav-auth" id="nav-auth-section">
+                    <button class="btn-login" onclick="openModal('auth-modal')">เข้าสู่ระบบ</button>
+                </div>
+            </div>
+        </div>
+    </nav>
+
+    <header class="about-hero">
+        <div class="container">
+            <div class="cert-badge">
+                <i class="fas fa-certificate"></i> การันตีมาตรฐาน Clean Food Good Taste
+            </div>
+            <h1 style="font-size: 3rem; margin: 15px 0; font-weight: 700; line-height: 1.2;">
+                ยกระดับ Street Food ไทย <br>สู่มาตรฐานสากล
+            </h1>
+            <p style="font-size: 1.25rem; opacity: 0.9; max-width: 700px; margin: 0 auto 30px;">
+                HygieGo คือผู้ช่วยมืออาชีพที่จะเปลี่ยนร้านของคุณให้สะอาด ถูกหลักอนามัย
+                พร้อมดำเนินการขอใบรับรองจากหน่วยงานรัฐ ให้คุณขายดีอย่างมั่นใจ ไร้กังวล
+            </p>
+        </div>
+    </header>
+
+
+    <section class="partner-bar">
+        <p style="color: #777; font-weight: 500;">ทำงานร่วมกับหน่วยงานภาครัฐและองค์กรมาตรฐานชั้นนำ</p>
+        <div class="partner-logos">
+            <div class="partner-item">
+                <i class="fas fa-landmark"></i>
+                <span style="font-size:0.9rem; font-weight:600;">กรมอนามัย</span>
+            </div>
+            <div class="partner-item">
+                <i class="fas fa-hospital-user"></i>
+                <span style="font-size:0.9rem; font-weight:600;">สาธารณสุขจังหวัด</span>
+            </div>
+            <div class="partner-item">
+                <i class="fas fa-building"></i>
+                <span style="font-size:0.9rem; font-weight:600;">เทศบาลท้องถิ่น</span>
+            </div>
+            <div class="partner-item">
+                <i class="fas fa-award"></i>
+                <span style="font-size:0.9rem; font-weight:600;">FDA Approved</span>
+            </div>
+        </div>
+    </section>
+
+    <section class="process-section">
+        <h6 style="color: var(--primary-teal); font-weight: 600;">OUR WORKFLOW</h6>
+        <h2 style="font-size: 2.2rem; color: #333; margin-bottom: 20px;">เส้นทางสู่ร้านมาตรฐาน "ป้ายทอง"</h2>
+        <p style="color: #666; max-width: 600px; margin: 0 auto;">เราดูแลคุณตั้งแต่เริ่มจัดร้าน ทำความสะอาด
+            จนถึงวันที่เจ้าหน้าที่รัฐมาติดป้ายรับรอง</p>
+
+        <div class="process-grid">
+            <div class="process-card">
+                <div class="step-num">1</div>
+                <div style="font-size: 3rem; color: var(--primary-teal); margin-bottom: 20px;">
+                    <i class="fas fa-broom"></i>
+                </div>
+                <h3>ปรับปรุง & เตรียมพร้อม</h3>
+                <p style="color: #666; margin-top: 10px;">ทีม HygieGo เข้าประเมินร้าน ทำความสะอาดจุดอับ (Deep Clean)
+                    และจัดระเบียบครัวตามหลักสุขาภิบาลอาหาร</p>
+            </div>
+
+            <div class="process-card">
+                <div class="step-num">2</div>
+                <div style="font-size: 3rem; color: var(--primary-teal); margin-bottom: 20px;">
+                    <i class="fas fa-clipboard-check"></i>
+                </div>
+                <h3>ประสานงานเจ้าหน้าที่รัฐ</h3>
+                <p style="color: #666; margin-top: 10px;">
+                    เรายื่นเรื่องนัดหมายเจ้าหน้าที่สาธารณสุขหรือเทศบาลมาตรวจหน้างาน พร้อมอยู่เคียงข้างคุณในวันตรวจจริง
+                </p>
+            </div>
+
+            <div class="process-card">
+                <div class="step-num">3</div>
+                <div style="font-size: 3rem; color: #D4AF37; margin-bottom: 20px;">
+                    <i class="fas fa-file-certificate"></i>
+                </div>
+                <h3>รับใบรับรองมาตรฐาน</h3>
+                <p style="color: #666; margin-top: 10px;">ผ่านการตรวจสอบ รับป้ายรับรอง (Certificate) ติดหน้าร้าน
+                    สร้างความเชื่อมั่น ดึงดูดลูกค้าและนักท่องเที่ยวทันที</p>
+            </div>
+        </div>
+    </section>
+
+    <section style="padding: 20px;">
+        <div class="mission-box">
+            <div class="mission-content">
+                <h2 style="font-size: 2.5rem; margin-bottom: 20px; color: #002b36;">ทำไมต้อง HygieGo?</h2>
+                <p style="font-size: 1.1rem; line-height: 1.8; color: #555; margin-bottom: 30px;">
+                    "Street Food ไทย อร่อยระดับโลก แต่หลายครั้งต้องสะดุดเพราะเรื่องความสะอาด"
+                </p>
+                <p style="color: #666; margin-bottom: 20px;">
+                    เราเข้าใจหัวอกเจ้าของร้านค้า ทั้งเรื่องเวลาที่จำกัดและความยุ่งยากในการติดต่อราชการ
+                    HygieGo จึงเกิดขึ้นเพื่อเป็น <strong>"ตัวกลาง"</strong> ที่ช่วยจัดการเรื่องปวดหัวเหล่านี้แทนคุณ
+                    เราไม่ได้แค่ทำความสะอาด แต่เราคือที่ปรึกษาที่จะทำให้ร้านของคุณถูกต้องตามกฎหมายและน่าซื้อที่สุดในย่าน
+                </p>
+                
+            </div>
+            <div class="mission-img"></div>
+        </div>
+    </section>
+
+    <section class="guarantee-section">
+        <i class="fas fa-hand-holding-heart" style="font-size: 3rem; margin-bottom: 20px;"></i>
+        <h2 style="margin-bottom: 15px;">การันตีผลงาน 100%</h2>
+        <p style="max-width: 600px; margin: 0 auto; opacity: 0.9;">
+            หากปรับปรุงร้านตามคำแนะนำของเราแล้วตรวจสอบไม่ผ่าน <br>
+            <strong>เรายินดีดำเนินการแก้ไขและยื่นเรื่องซ้ำให้ฟรี จนกว่าจะผ่าน!</strong>
+        </p>
+    </section>
+
+    <section style="padding: 80px 20px; background: #fff; text-align: center;">
+        <h2 style="margin-bottom: 40px; color: #333;">ร้านค้าที่ไว้วางใจเรา</h2>
+        <div id="review-container" style="display: flex; justify-content: center; gap: 30px; flex-wrap: wrap;">
+        </div>
+    </section>
+
+    <footer style="background: #001f27; color: #8898aa; padding: 50px 20px; text-align: center;">
+        <div style="margin-bottom: 20px;">
+            <i class="fas fa-utensils" style="font-size: 2rem; color: var(--primary-teal);"></i>
+        </div>
+        <p>&copy; 2024 HygieGo - เพื่อนแท้ร้านอาหาร Street Food</p>
+    </footer>
+
+    <div id="system-dashboard" class="hidden"></div>
+    <div id="payment-modal" class="hidden"></div>
+    <div id="auth-modal" class="modal-overlay hidden">
+        <div class="modal-content login-theme" style="max-width: 500px; max-height: 90vh; overflow-y: auto;">
+            <span class="close-modal" onclick="closeModal('auth-modal')">&times;</span>
+
+            <h2 id="auth-title" style="text-align:center; color:#333; margin-bottom:20px;">เข้าสู่ระบบ</h2>
+
+            <form onsubmit="window.handleAuthSubmit(event)">
+
+                <div style="margin-bottom:15px;">
+                    <input type="text" id="auth-email" placeholder="อีเมล (Email)" required
+                        style="width:100%; padding:12px; border:1px solid #ddd; border-radius:8px;">
+                </div>
+                <div style="margin-bottom:15px;">
+                    <input type="password" id="auth-pass" placeholder="รหัสผ่าน" required
+                        style="width:100%; padding:12px; border:1px solid #ddd; border-radius:8px;">
+                </div>
+
+                <div id="register-fields" class="hidden">
+
+                    <div style="margin-bottom:15px;">
+                        <input type="password" id="auth-confirm-pass" placeholder="ยืนยันรหัสผ่าน"
+                            style="width:100%; padding:12px; border:1px solid #ddd; border-radius:8px;">
+                    </div>
+
+                    <h4 style="text-align:left; color:#666; margin: 15px 0 10px; font-size:14px;">ข้อมูลส่วนตัว</h4>
+                    <div class="grid-2"
+                        style="display:grid; grid-template-columns: 1fr 1fr; gap:10px; margin-bottom:10px;">
+                        <input type="text" id="reg-fname" placeholder="ชื่อจริง"
+                            style="padding:10px; border:1px solid #ddd; border-radius:8px;">
+                        <input type="text" id="reg-lname" placeholder="นามสกุล"
+                            style="padding:10px; border:1px solid #ddd; border-radius:8px;">
+                    </div>
+                    <div style="margin-bottom:10px;">
+                        <input type="tel" id="reg-phone" placeholder="เบอร์โทรศัพท์"
+                            style="width:100%; padding:10px; border:1px solid #ddd; border-radius:8px;">
+                    </div>
+
+                    <h4 style="text-align:left; color:#666; margin: 15px 0 10px; font-size:14px;">ข้อมูลร้านค้า</h4>
+                    <div style="margin-bottom:10px;">
+                        <input type="text" id="reg-shop-name" placeholder="ชื่อร้านอาหาร"
+                            style="width:100%; padding:10px; border:1px solid #ddd; border-radius:8px;">
+                    </div>
+                    <div style="margin-bottom:10px;">
+                        <textarea id="reg-address" placeholder="ที่อยู่ร้าน (เลขที่, หมู่, ซอย, ถนน)" rows="2"
+                            style="width:100%; padding:10px; border:1px solid #ddd; border-radius:8px; resize:none;"></textarea>
+                    </div>
+
+                    <div class="grid-2"
+                        style="display:grid; grid-template-columns: 1fr 1fr; gap:10px; margin-bottom:10px;">
+                        <input type="text" id="reg-subdistrict" placeholder="แขวง/ตำบล"
+                            style="padding:10px; border:1px solid #ddd; border-radius:8px;">
+                        <input type="text" id="reg-district" placeholder="เขต/อำเภอ"
+                            style="padding:10px; border:1px solid #ddd; border-radius:8px;">
+                    </div>
+                    <div class="grid-2"
+                        style="display:grid; grid-template-columns: 1fr 1fr; gap:10px; margin-bottom:15px;">
+                        <input type="text" id="reg-province" placeholder="จังหวัด"
+                            style="padding:10px; border:1px solid #ddd; border-radius:8px;">
+                        <input type="text" id="reg-zip" placeholder="รหัสไปรษณีย์"
+                            style="padding:10px; border:1px solid #ddd; border-radius:8px;">
+                    </div>
+                </div>
+
+                <button type="submit" id="auth-btn-submit" class="btn-modern"
+                    style="width:100%; padding:12px; background:#00C3AA; color:white; border:none; border-radius:8px; cursor:pointer; font-size:16px;">
+                    เข้าสู่ระบบ
+                </button>
+            </form>
+
+            <div style="margin-top:20px; text-align:center; font-size:14px;">
+                <span id="auth-toggle-text">ยังไม่มีบัญชี?</span>
+                <b id="auth-toggle-link" style="cursor:pointer; color:#00C3AA;" onclick="toggleAuthMode()">
+                    สมัครสมาชิก
+                </b>
+            </div>
+        </div>
+    </div>
+
+
+</body>
+
+</html>

@@ -1,0 +1,460 @@
+<!DOCTYPE html>
+<html lang="th">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>ผลงานของเรา - HygieGo การันตีความสะอาด</title>
+    
+    <link href="https://fonts.googleapis.com/css2?family=Prompt:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    
+    <link rel="stylesheet" href="style.css">
+    
+    <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+    <script src="script.js"></script>
+
+    <style>
+        /* --- Page Specific Styles --- */
+        body {
+            background-color: #f8fafc;
+            color: #333;
+        }
+
+        /* Hero Section */
+        .portfolio-hero {
+            background: linear-gradient(rgba(0, 43, 54, 0.9), rgba(0, 43, 54, 0.8)), 
+                        url('https://images.unsplash.com/photo-1555396273-367ea4eb4db5?auto=format&fit=crop&q=80&w=1200');
+            background-size: cover;
+            background-position: center;
+            padding: 100px 20px 80px;
+            text-align: center;
+            color: white;
+        }
+
+        /* Filter Buttons */
+        .filter-nav {
+            display: flex;
+            justify-content: center;
+            gap: 15px;
+            margin: -30px auto 50px;
+            position: relative;
+            z-index: 10;
+            flex-wrap: wrap;
+            padding: 0 10px;
+        }
+
+        .filter-btn {
+            background: white;
+            border: none;
+            padding: 12px 25px;
+            border-radius: 30px;
+            font-family: 'Prompt', sans-serif;
+            font-size: 1rem;
+            color: #555;
+            cursor: pointer;
+            box-shadow: 0 5px 15px rgba(0,0,0,0.1);
+            transition: 0.3s;
+            font-weight: 500;
+        }
+
+        .filter-btn.active, .filter-btn:hover {
+            background: var(--primary-teal);
+            color: white;
+            transform: translateY(-3px);
+        }
+
+        /* Portfolio Grid */
+        .portfolio-grid {
+            max-width: 1200px;
+            margin: 0 auto;
+            padding: 0 20px 80px;
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(350px, 1fr));
+            gap: 30px;
+        }
+
+        .project-card {
+            background: white;
+            border-radius: 16px;
+            overflow: hidden;
+            box-shadow: 0 10px 30px rgba(0,0,0,0.05);
+            transition: 0.3s;
+            position: relative;
+            border: 1px solid #eee;
+        }
+
+        .project-card:hover {
+            transform: translateY(-10px);
+            box-shadow: 0 20px 40px rgba(0,0,0,0.1);
+        }
+
+        /* Badge ติดมุมภาพ */
+        .status-badge {
+            position: absolute;
+            top: 20px;
+            right: 20px;
+            background: #FFD700;
+            color: #333;
+            padding: 5px 15px;
+            border-radius: 20px;
+            font-size: 0.85rem;
+            font-weight: bold;
+            box-shadow: 0 2px 10px rgba(0,0,0,0.2);
+            z-index: 2;
+        }
+
+        /* Before & After Effect */
+        .image-compare {
+            position: relative;
+            height: 250px;
+            overflow: hidden;
+        }
+        
+        .image-compare img {
+            width: 100%;
+            height: 100%;
+            object-fit: cover;
+        }
+        
+        .compare-label {
+            position: absolute;
+            bottom: 10px;
+            left: 10px;
+            background: rgba(0,0,0,0.6);
+            color: white;
+            padding: 4px 10px;
+            border-radius: 4px;
+            font-size: 0.8rem;
+        }
+
+        .card-content {
+            padding: 25px;
+        }
+
+        .card-tags {
+            display: flex;
+            gap: 10px;
+            margin-bottom: 15px;
+        }
+
+        .tag {
+            background: #e0f2f1;
+            color: var(--primary-teal);
+            padding: 4px 10px;
+            border-radius: 4px;
+            font-size: 0.8rem;
+            font-weight: 500;
+        }
+
+        /* Stats in Card */
+        .card-stats {
+            display: flex;
+            justify-content: space-between;
+            margin-top: 20px;
+            padding-top: 20px;
+            border-top: 1px solid #eee;
+            font-size: 0.9rem;
+            color: #777;
+        }
+
+        .card-stats i { color: var(--primary-teal); margin-right: 5px; }
+
+        /* CTA Section */
+        .cta-box {
+            background: #003087;
+            border-radius: 20px;
+            padding: 60px;
+            text-align: center;
+            color: white;
+            max-width: 1000px;
+            margin: 0 auto 80px;
+            position: relative;
+            overflow: hidden;
+        }
+        
+        .cta-box::before {
+            content: '';
+            position: absolute;
+            top: 0; left: 0; right: 0; bottom: 0;
+            background: url('https://www.transparenttextures.com/patterns/cubes.png');
+            opacity: 0.1;
+        }
+
+    </style>
+</head>
+
+<body>
+
+    <nav class="navbar" id="main-nav">
+        <div class="nav-container">
+            <div class="logo">
+                <a href="index.html" style="text-decoration:none; color:white;">
+                    <i class="fas fa-shield-alt"></i> HygieGo
+                </a>
+            </div>
+            <div class="nav-links">
+                <div class="nav-links">
+                    <a href="index.html">หน้าหลัก</a>
+                    <a href="about.html">เกี่ยวกับเรา</a>
+                    <a href="portfolio.html">ผลงาน</a>
+                    <a href="services.html">บริการของเรา</a>
+                    <a href="pricing.html">แพ็คเกจราคา</a>
+                    <a href="https://line.me/R/ti/p/@811cltri" target="_blank" style="color:#00B900; font-weight:bold;">
+                        <i class="fab fa-line"></i> ติดต่อสอบถาม
+                    </a>
+                </div>
+                <div class="nav-auth" id="nav-auth-section">
+                    <button class="btn-login" onclick="openModal('auth-modal')">เข้าสู่ระบบ</button>
+                </div>
+            </div>
+        </div>
+    </nav>
+
+    <header class="portfolio-hero">
+        <h1 style="font-size: 3rem; margin-bottom: 15px;">ทำเนียบร้านค้า <span style="color: var(--primary-teal);">"ป้ายทอง"</span></h1>
+        <p style="font-size: 1.2rem; opacity: 0.9; max-width: 700px; margin: 0 auto;">
+            รวมผลงานความสำเร็จของร้าน Street Food ที่ไว้วางใจให้เราดูแล <br>สะอาดขึ้น ยอดขายเพิ่มขึ้น และผ่านการรับรองจากรัฐ
+        </p>
+    </header>
+
+    <div class="filter-nav">
+        <button class="filter-btn active" onclick="filterSelection('all')">ทั้งหมด</button>
+        <button class="filter-btn" onclick="filterSelection('certificate')">ร้านที่ผ่านการรับรอง</button>
+        <button class="filter-btn" onclick="filterSelection('cleaning')">Before & After</button>
+        <button class="filter-btn" onclick="filterSelection('renovation')">จัดระเบียบครัว</button>
+    </div>
+
+    <section class="portfolio-grid" id="portfolio-container">
+        
+        <div class="project-card filter-item certificate">
+            <div class="status-badge"><i class="fas fa-medal"></i> Certified</div>
+            <div class="image-compare">
+                <img src="https://images.unsplash.com/photo-1565299624946-b28f40a0ae38?auto=format&fit=crop&q=80&w=600" alt="ร้านพิซซ่าเตาถ่าน">
+            </div>
+            <div class="card-content">
+                <div class="card-tags">
+                    <span class="tag">Street Food</span>
+                    <span class="tag">ขอใบรับรอง</span>
+                </div>
+                <h3>ร้าน Pizza เตาถ่าน ลุงจอน</h3>
+                <p style="color: #666; font-size: 0.95rem; margin-top: 10px;">
+                    จากรถเข็นขายพิซซ่าสู่ Food Truck มาตรฐานสากล เราช่วยยื่นเรื่องขอใบอนุญาตสะสมอาหารและจัดการระบบน้ำทิ้งจนผ่านฉลุย
+                </p>
+                <div class="card-stats">
+                    <span><i class="fas fa-map-marker-alt"></i> ตลาดนัดจตุจักร</span>
+                    <span><i class="fas fa-check-circle"></i> ผ่านแล้ว</span>
+                </div>
+            </div>
+        </div>
+
+        <div class="project-card filter-item cleaning">
+            <div class="image-compare">
+                <img src="https://images.unsplash.com/photo-1600093463592-8e36ae95ef56?auto=format&fit=crop&q=80&w=600" alt="Clean Kitchen">
+                <span class="compare-label">After Cleaning</span>
+            </div>
+            <div class="card-content">
+                <div class="card-tags">
+                    <span class="tag">Big Cleaning</span>
+                    <span class="tag">ขัดพื้น/ผนัง</span>
+                </div>
+                <h3>ร้านข้าวมันไก่ เจ๊หงส์</h3>
+                <p style="color: #666; font-size: 0.95rem; margin-top: 10px;">
+                    บริการขัดล้างคราบน้ำมันสะสมในครัวกว่า 10 ปี เปลี่ยนครัวเก่าให้เงาวับเหมือนใหม่ ถูกใจเจ้าหน้าที่สาธารณสุข
+                </p>
+                <div class="card-stats">
+                    <span><i class="fas fa-clock"></i> ใช้เวลา 1 วัน</span>
+                    <span><i class="fas fa-sparkles"></i> สะอาด 100%</span>
+                </div>
+            </div>
+        </div>
+
+        <div class="project-card filter-item renovation">
+            <div class="status-badge" style="background: #00C3AA; color: white;">Best Design</div>
+            <div class="image-compare">
+                <img src="https://static.vecteezy.com/system/resources/thumbnails/070/867/001/small/chef-cooking-food-on-a-flat-top-grill-in-a-food-truck-photo.jpg" alt="Kitchen Layout">
+            </div>
+            <div class="card-content">
+                <div class="card-tags">
+                    <span class="tag">จัดระเบียบ</span>
+                    <span class="tag">วางระบบน้ำ</span>
+                </div>
+                <h3>ครัวคุณต๋อย อาหารตามสั่ง</h3>
+                <p style="color: #666; font-size: 0.95rem; margin-top: 10px;">
+                    รื้อระบบการวางของใหม่ แยกโซนของสด-ของสุก ติดตั้งถังดักไขมัน ป้องกันท่อตันและกลิ่นรบกวนชุมชน
+                </p>
+                <div class="card-stats">
+                    <span><i class="fas fa-map-marker-alt"></i> ย่านบางรัก</span>
+                    <span><i class="fas fa-tools"></i> ติดตั้งอุปกรณ์</span>
+                </div>
+            </div>
+        </div>
+
+        <div class="project-card filter-item certificate">
+            <div class="status-badge"><i class="fas fa-medal"></i> Certified</div>
+            <div class="image-compare">
+                <img src="https://images.unsplash.com/photo-1594212699903-ec8a3eca50f5?auto=format&fit=crop&q=80&w=600" alt="Burger Stall">
+            </div>
+            <div class="card-content">
+                <div class="card-tags">
+                    <span class="tag">Kiosk</span>
+                    <span class="tag">ใบอนุญาตจำหน่าย</span>
+                </div>
+                <h3>Burger King of Street</h3>
+                <p style="color: #666; font-size: 0.95rem; margin-top: 10px;">
+                    ช่วยเตรียมเอกสารและปรับปรุงพื้นที่ขาย ให้ถูกต้องตามเทศบัญญัติ ได้รับใบอนุญาตจำหน่ายสินค้าในที่หรือทางสาธารณะ
+                </p>
+                <div class="card-stats">
+                    <span><i class="fas fa-map-marker-alt"></i> ถนนข้าวสาร</span>
+                    <span><i class="fas fa-check-circle"></i> ผ่านแล้ว</span>
+                </div>
+            </div>
+        </div>
+        
+        <div class="project-card filter-item cleaning">
+            <div class="image-compare">
+                <img src="https://images.unsplash.com/photo-1584622650111-993a426fbf0a?auto=format&fit=crop&q=80&w=600" alt="Clean Hood">
+                <span class="compare-label">After Cleaning</span>
+            </div>
+            <div class="card-content">
+                <div class="card-tags">
+                    <span class="tag">ล้างปล่องดูดควัน</span>
+                </div>
+                <h3>ร้านหมูกระทะ เฮียเป็ด</h3>
+                <p style="color: #666; font-size: 0.95rem; margin-top: 10px;">
+                    ล้างคราบไขมันในปล่องดูดควันที่สะสมหนาเตอะ ช่วยลดความเสี่ยงไฟไหม้และทำให้อากาศในร้านถ่ายเทดีขึ้น
+                </p>
+                <div class="card-stats">
+                    <span><i class="fas fa-user-shield"></i> ปลอดภัยขึ้น</span>
+                    <span><i class="fas fa-star"></i> ลูกค้าชม</span>
+                </div>
+            </div>
+        </div>
+        <div id="system-dashboard" class="hidden"></div>
+    <div id="payment-modal" class="hidden"></div>
+    <div id="auth-modal" class="modal-overlay hidden">
+        <div class="modal-content login-theme" style="max-width: 500px; max-height: 90vh; overflow-y: auto;">
+            <span class="close-modal" onclick="closeModal('auth-modal')">&times;</span>
+
+            <h2 id="auth-title" style="text-align:center; color:#333; margin-bottom:20px;">เข้าสู่ระบบ</h2>
+
+            <form onsubmit="window.handleAuthSubmit(event)">
+
+                <div style="margin-bottom:15px;">
+                    <input type="text" id="auth-email" placeholder="อีเมล (Email)" required
+                        style="width:100%; padding:12px; border:1px solid #ddd; border-radius:8px;">
+                </div>
+                <div style="margin-bottom:15px;">
+                    <input type="password" id="auth-pass" placeholder="รหัสผ่าน" required
+                        style="width:100%; padding:12px; border:1px solid #ddd; border-radius:8px;">
+                </div>
+
+                <div id="register-fields" class="hidden">
+
+                    <div style="margin-bottom:15px;">
+                        <input type="password" id="auth-confirm-pass" placeholder="ยืนยันรหัสผ่าน"
+                            style="width:100%; padding:12px; border:1px solid #ddd; border-radius:8px;">
+                    </div>
+
+                    <h4 style="text-align:left; color:#666; margin: 15px 0 10px; font-size:14px;">ข้อมูลส่วนตัว</h4>
+                    <div class="grid-2"
+                        style="display:grid; grid-template-columns: 1fr 1fr; gap:10px; margin-bottom:10px;">
+                        <input type="text" id="reg-fname" placeholder="ชื่อจริง"
+                            style="padding:10px; border:1px solid #ddd; border-radius:8px;">
+                        <input type="text" id="reg-lname" placeholder="นามสกุล"
+                            style="padding:10px; border:1px solid #ddd; border-radius:8px;">
+                    </div>
+                    <div style="margin-bottom:10px;">
+                        <input type="tel" id="reg-phone" placeholder="เบอร์โทรศัพท์"
+                            style="width:100%; padding:10px; border:1px solid #ddd; border-radius:8px;">
+                    </div>
+
+                    <h4 style="text-align:left; color:#666; margin: 15px 0 10px; font-size:14px;">ข้อมูลร้านค้า</h4>
+                    <div style="margin-bottom:10px;">
+                        <input type="text" id="reg-shop-name" placeholder="ชื่อร้านอาหาร"
+                            style="width:100%; padding:10px; border:1px solid #ddd; border-radius:8px;">
+                    </div>
+                    <div style="margin-bottom:10px;">
+                        <textarea id="reg-address" placeholder="ที่อยู่ร้าน (เลขที่, หมู่, ซอย, ถนน)" rows="2"
+                            style="width:100%; padding:10px; border:1px solid #ddd; border-radius:8px; resize:none;"></textarea>
+                    </div>
+
+                    <div class="grid-2"
+                        style="display:grid; grid-template-columns: 1fr 1fr; gap:10px; margin-bottom:10px;">
+                        <input type="text" id="reg-subdistrict" placeholder="แขวง/ตำบล"
+                            style="padding:10px; border:1px solid #ddd; border-radius:8px;">
+                        <input type="text" id="reg-district" placeholder="เขต/อำเภอ"
+                            style="padding:10px; border:1px solid #ddd; border-radius:8px;">
+                    </div>
+                    <div class="grid-2"
+                        style="display:grid; grid-template-columns: 1fr 1fr; gap:10px; margin-bottom:15px;">
+                        <input type="text" id="reg-province" placeholder="จังหวัด"
+                            style="padding:10px; border:1px solid #ddd; border-radius:8px;">
+                        <input type="text" id="reg-zip" placeholder="รหัสไปรษณีย์"
+                            style="padding:10px; border:1px solid #ddd; border-radius:8px;">
+                    </div>
+                </div>
+
+                <button type="submit" id="auth-btn-submit" class="btn-modern"
+                    style="width:100%; padding:12px; background:#00C3AA; color:white; border:none; border-radius:8px; cursor:pointer; font-size:16px;">
+                    เข้าสู่ระบบ
+                </button>
+            </form>
+
+            <div style="margin-top:20px; text-align:center; font-size:14px;">
+                <span id="auth-toggle-text">ยังไม่มีบัญชี?</span>
+                <b id="auth-toggle-link" style="cursor:pointer; color:#00C3AA;" onclick="toggleAuthMode()">
+                    สมัครสมาชิก
+                </b>
+            </div>
+        </div>
+    </div>
+    </section>
+
+    <footer style="background: #001f27; color: #8898aa; padding: 50px 20px; text-align: center; margin-top: 50px;">
+        <div style="margin-bottom: 20px;">
+            <i class="fas fa-utensils" style="font-size: 2rem; color: var(--primary-teal);"></i>
+        </div>
+        <p>&copy; 2024 HygieGo System. All rights reserved.</p>
+    </footer>
+
+    <script>
+        function filterSelection(category) {
+            var elements = document.getElementsByClassName("filter-item");
+            var btns = document.getElementsByClassName("filter-btn");
+
+            // จัดการ Active Class ปุ่ม
+            for (var i = 0; i < btns.length; i++) {
+                btns[i].classList.remove("active");
+                if (btns[i].innerText === event.target.innerText) {
+                    btns[i].classList.add("active");
+                }
+            }
+            if (category === 'all') { // กรณีคลิก "ทั้งหมด" ให้หาปุ่มแรก
+                 document.querySelector('.filter-btn').classList.add('active'); 
+            }
+
+            // แสดง/ซ่อน การ์ด
+            for (var i = 0; i < elements.length; i++) {
+                if (category == "all") {
+                    elements[i].style.display = "block";
+                } else {
+                    if (elements[i].classList.contains(category)) {
+                        elements[i].style.display = "block";
+                    } else {
+                        elements[i].style.display = "none";
+                    }
+                }
+            }
+        }
+    </script>
+    
+    <div id="auth-modal" class="modal-overlay" style="display:none;">
+        <div class="modal-content">
+            <span class="close-modal" onclick="toggleAuthModal()">&times;</span>
+            <div id="auth-form-container"></div>
+        </div>
+    </div>
+
+</body>
+</html>

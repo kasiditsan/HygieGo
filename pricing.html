@@ -1,0 +1,367 @@
+<!DOCTYPE html>
+<html lang="th">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>แพ็คเกจราคา - HygieGo</title>
+    <link href="https://fonts.googleapis.com/css2?family=Prompt:wght@300;400;500;600&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <link rel="stylesheet" href="style.css">
+    <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+    <script src="script.js"></script>
+
+    <style>
+        body {
+            background-color: #f5f7fa;
+            /* พื้นหลังสีเทาอ่อนช่วยให้การ์ดเด่น */
+        }
+
+        .pricing-section {
+            padding: 50px 20px;
+            max-width: 1200px;
+            margin: 0 auto;
+            /* จัดกึ่งกลางหน้าจอ */
+        }
+
+        .section-title {
+            text-align: center;
+            margin-bottom: 50px;
+        }
+
+        .section-title h2 {
+            color: #023440;
+            font-size: 2.5rem;
+            margin-bottom: 10px;
+        }
+
+        /* กล่องรวมการ์ด: บังคับให้เรียงแนวนอน */
+
+        .pricing-container {
+            display: flex;
+            justify-content: center;
+            gap: 40px;
+            flex-wrap: wrap;
+        }
+
+        .price-card {
+            background: white;
+            width: 300px;
+            padding: 40px 30px;
+            border-radius: 16px;
+            box-shadow: 0 10px 40px rgba(0, 0, 0, 0.08);
+            position: relative;
+            border: 1px solid #eee;
+            display: flex;
+            flex-direction: column;
+            transition: transform 0.3s;
+        }
+
+        .price-card:hover {
+            transform: translateY(-10px);
+        }
+
+        .price-card.popular {
+            border: 2px solid #00c853;
+            transform: scale(1.05);
+            z-index: 1;
+        }
+
+        .price-card.popular:hover {
+            transform: scale(1.05) translateY(-10px);
+        }
+
+        .badge-popular {
+            position: absolute;
+            top: -12px;
+            right: 20px;
+            background: #00c853;
+            color: white;
+            padding: 5px 15px;
+            border-radius: 20px;
+            font-size: 0.8rem;
+            font-weight: bold;
+        }
+
+        .price-header {
+            text-align: center;
+            margin-bottom: 30px;
+        }
+
+        .price-header h3 {
+            font-size: 1.5rem;
+            color: #333;
+            margin-bottom: 15px;
+        }
+
+        .price {
+            font-size: 3rem;
+            font-weight: 600;
+            color: #023440;
+        }
+
+        .price-features {
+            list-style: none;
+            padding: 0;
+            margin: 0 0 30px 0;
+            flex-grow: 1;
+            text-align: left;
+        }
+
+        .price-features li {
+            margin-bottom: 15px;
+            color: #555;
+            display: flex;
+            align-items: center;
+            font-size: 0.95rem;
+        }
+
+        .price-features li i {
+            margin-right: 10px;
+            font-size: 1.1rem;
+        }
+
+        .price-features li i.fa-check-circle {
+            color: #28a745;
+        }
+
+        .price-features li i.fa-times-circle {
+            color: #ccc;
+        }
+
+        .price-features li.disabled {
+            color: #aaa;
+            text-decoration: line-through;
+        }
+
+        .btn-buy {
+            width: 100%;
+            padding: 12px;
+            border: none;
+            border-radius: 8px;
+            font-size: 1rem;
+            font-weight: 500;
+            cursor: pointer;
+            transition: all 0.2s;
+        }
+
+        .btn-blue {
+            background: #e3f2fd;
+            color: #1565c0;
+        }
+
+        .btn-green {
+            background: #00c853;
+            color: white;
+            box-shadow: 0 5px 15px rgba(0, 185, 0, 0.3);
+        }
+
+        .btn-purple {
+            background: #f3e5f5;
+            color: #7b1fa2;
+        }
+    </style>
+</head>
+
+<body>
+
+    <nav class="navbar" id="main-nav">
+        <div class="nav-container">
+            <div class="logo">
+                <a href="index.html" style="text-decoration:none; color:white;"><i class="fas fa-shield-alt"></i>
+                    HygieGo</a>
+            </div>
+            <div class="nav-links">
+                <div class="nav-links">
+                    <a href="index.html">หน้าหลัก</a>
+                    <a href="about.html">เกี่ยวกับเรา</a>
+                    <a href="portfolio.html">ผลงาน</a>
+                    <a href="services.html">บริการของเรา</a>
+                    <a href="pricing.html">แพ็คเกจราคา</a>
+                    <a href="https://line.me/R/ti/p/@811cltri" target="_blank" style="color:#00B900; font-weight:bold;">
+                        <i class="fab fa-line"></i> ติดต่อสอบถาม
+                    </a>
+                </div>
+                <div class="nav-auth" id="nav-auth-section">
+                    <button class="btn-login" onclick="openModal('auth-modal')">เข้าสู่ระบบ</button>
+                </div>
+            </div>
+    </nav>
+
+    <section class="pricing-cards-section" style="padding: 0 20px 80px; background: #f8fafc;">
+        <div class="container pricing-container">
+
+            <section class="pricing-header text-center" style="padding: 60px 20px; background: #f8fafc;">
+                <div class="container">
+                    <h2 style="font-size: 2.5rem; color: #0f172a; font-weight: 700; margin-bottom: 10px;">
+                        เลือกแพ็คเกจที่ใช่สำหรับคุณ
+                    </h2>
+                    <p style="color: #64748b; font-size: 1.1rem;">
+                        ยกระดับมาตรฐานร้านอาหาร ด้วยบริการมืออาชีพจาก HygieGo
+                    </p>
+                </div>
+            </section>
+
+            <section class="pricing-cards-section" style="padding: 0 20px 80px; background: #f8fafc;">
+                <div class="pricing-container">
+
+                    <div class="pricing-card theme-blue">
+                        <div class="card-icon">
+                            <i class="fas fa-desktop"></i>
+                        </div>
+                        <div class="card-header">
+                            <h3>แพ็คเกจออนไลน์</h3>
+                            <p class="desc">เหมาะสำหรับร้านที่ต้องการตรวจสอบเบื้องต้น</p>
+                        </div>
+                        <div class="price-box">
+                            <span class="currency">฿</span>
+                            <span class="amount">9,900</span>
+                            <span class="duration">/ ปี</span>
+                        </div>
+                        <ul class="feature-list">
+                            <li><i class="fas fa-check"></i> ตรวจสอบผ่านระบบออนไลน์ ภายใน 3 วัน</li>
+                            <li><i class="fas fa-check"></i> ค่าแนะนำการปรับปรุงเบื้องต้น</li>
+                            <li><i class="fas fa-check"></i> ได้ E-Certificate</li>
+                            <li><i class="fas fa-check"></i> รายงานผลทางอีเมล</li>
+                        </ul>
+                        <button class="btn-select" onclick="window.handlePackageSelection('Online Starter', 9900)">
+                            เลือกแพ็คเกจนี้
+                        </button>
+                    </div>
+
+                    <div class="pricing-card theme-purple popular">
+                        <div class="popular-badge">ยอดนิยม</div>
+                        <div class="card-icon">
+                            <i class="fas fa-user-friends"></i>
+                        </div>
+                        <div class="card-header">
+                            <h3>แพ็คเกจลงพื้นที่</h3>
+                            <p class="desc">เหมาะสำหรับร้านที่ต้องการความละเอียด</p>
+                        </div>
+                        <a href="" class="price-box">
+                            <span class="currency">฿</span>
+                            <span class="amount">24,900</span>
+                            <span class="duration">/ ปี</span>
+                        </a>
+                        <ul class="feature-list">
+                            <li><i class="fas fa-check"></i> <strong>ลงพื้นที่ตรวจสอบโดยผู้เชี่ยวชาญ</strong></li>
+                            <li><i class="fas fa-check"></i> คำแนะนำการปรับปรุงเชิงลึก</li>
+                            <li><i class="fas fa-check"></i> เอกสารประกอบครบถ้วน</li>
+                            <li><i class="fas fa-check"></i> ให้คำปรึกษาหลังตรวจ 2 ครั้ง</li>
+                            <li><i class="fas fa-check"></i> ตรวจติดตามผล 1 ครั้ง</li>
+                        </ul>
+                        <button class="btn-select" onclick="window.handlePackageSelection('On-site Standard', 24900)">
+                            เลือกแพ็คเกจนี้
+                        </button>
+                    </div>
+
+                    <div class="pricing-card theme-green">
+                        <div class="card-icon">
+                            <i class="fas fa-shield-alt"></i>
+                        </div>
+                        <div class="card-header">
+                            <h3>Premium รับประกัน</h3>
+                            <p class="desc">เหมาะสำหรับร้านที่ต้องการการรับรองสูงสุด</p>
+                        </div>
+                        <div class="price-box">
+                            <span class="currency">฿</span>
+                            <span class="amount">49,900</span>
+                            <span class="duration">/ ปี</span>
+                        </div>
+                        <ul class="feature-list">
+                            <li><i class="fas fa-check"></i> ตรวจสอบและลงพื้นที่ทันที (Priority)</li>
+                            <li><i class="fas fa-check"></i> <strong>ติดตามจนกว่าจะได้รับใบอนุญาต</strong></li>
+                            <li><i class="fas fa-check"></i> ให้คำปรึกษาตลอด 24 ชม.</li>
+                            <li><i class="fas fa-check"></i> ตรวจติดตามผลหลังแก้ไขไม่จำกัด</li>
+                            <li><i class="fas fa-check"></i> บริการหลังการขายยาวนาน 1 ปี</li>
+                        </ul>
+                        <button class="btn-select" onclick="window.handlePackageSelection('Premium Guarantee', 49900)">
+                            เลือกแพ็คเกจนี้
+                        </button>
+                    </div>
+
+                </div>
+            </section>
+
+        </div>
+    </section>
+    <div id="auth-modal" class="modal-overlay hidden">
+        <div class="modal-content login-theme" style="max-width: 500px; max-height: 90vh; overflow-y: auto;">
+            <span class="close-modal" onclick="closeModal('auth-modal')">&times;</span>
+
+            <h2 id="auth-title" style="text-align:center; color:#333; margin-bottom:20px;">เข้าสู่ระบบ</h2>
+
+            <form onsubmit="window.handleAuthSubmit(event)">
+
+                <div style="margin-bottom:15px;">
+                    <input type="text" id="auth-email" placeholder="อีเมล (Email)" required
+                        style="width:100%; padding:12px; border:1px solid #ddd; border-radius:8px;">
+                </div>
+                <div style="margin-bottom:15px;">
+                    <input type="password" id="auth-pass" placeholder="รหัสผ่าน" required
+                        style="width:100%; padding:12px; border:1px solid #ddd; border-radius:8px;">
+                </div>
+
+                <div id="register-fields" class="hidden">
+
+                    <div style="margin-bottom:15px;">
+                        <input type="password" id="auth-confirm-pass" placeholder="ยืนยันรหัสผ่าน"
+                            style="width:100%; padding:12px; border:1px solid #ddd; border-radius:8px;">
+                    </div>
+
+                    <h4 style="text-align:left; color:#666; margin: 15px 0 10px; font-size:14px;">ข้อมูลส่วนตัว</h4>
+                    <div class="grid-2"
+                        style="display:grid; grid-template-columns: 1fr 1fr; gap:10px; margin-bottom:10px;">
+                        <input type="text" id="reg-fname" placeholder="ชื่อจริง"
+                            style="padding:10px; border:1px solid #ddd; border-radius:8px;">
+                        <input type="text" id="reg-lname" placeholder="นามสกุล"
+                            style="padding:10px; border:1px solid #ddd; border-radius:8px;">
+                    </div>
+                    <div style="margin-bottom:10px;">
+                        <input type="tel" id="reg-phone" placeholder="เบอร์โทรศัพท์"
+                            style="width:100%; padding:10px; border:1px solid #ddd; border-radius:8px;">
+                    </div>
+
+                    <h4 style="text-align:left; color:#666; margin: 15px 0 10px; font-size:14px;">ข้อมูลร้านค้า</h4>
+                    <div style="margin-bottom:10px;">
+                        <input type="text" id="reg-shop-name" placeholder="ชื่อร้านอาหาร"
+                            style="width:100%; padding:10px; border:1px solid #ddd; border-radius:8px;">
+                    </div>
+                    <div style="margin-bottom:10px;">
+                        <textarea id="reg-address" placeholder="ที่อยู่ร้าน (เลขที่, หมู่, ซอย, ถนน)" rows="2"
+                            style="width:100%; padding:10px; border:1px solid #ddd; border-radius:8px; resize:none;"></textarea>
+                    </div>
+
+                    <div class="grid-2"
+                        style="display:grid; grid-template-columns: 1fr 1fr; gap:10px; margin-bottom:10px;">
+                        <input type="text" id="reg-subdistrict" placeholder="แขวง/ตำบล"
+                            style="padding:10px; border:1px solid #ddd; border-radius:8px;">
+                        <input type="text" id="reg-district" placeholder="เขต/อำเภอ"
+                            style="padding:10px; border:1px solid #ddd; border-radius:8px;">
+                    </div>
+                    <div class="grid-2"
+                        style="display:grid; grid-template-columns: 1fr 1fr; gap:10px; margin-bottom:15px;">
+                        <input type="text" id="reg-province" placeholder="จังหวัด"
+                            style="padding:10px; border:1px solid #ddd; border-radius:8px;">
+                        <input type="text" id="reg-zip" placeholder="รหัสไปรษณีย์"
+                            style="padding:10px; border:1px solid #ddd; border-radius:8px;">
+                    </div>
+                </div>
+
+                <button type="submit" id="auth-btn-submit" class="btn-modern"
+                    style="width:100%; padding:12px; background:#00C3AA; color:white; border:none; border-radius:8px; cursor:pointer; font-size:16px;">
+                    เข้าสู่ระบบ
+                </button>
+            </form>
+
+            <div style="margin-top:20px; text-align:center; font-size:14px;">
+                <span id="auth-toggle-text">ยังไม่มีบัญชี?</span>
+                <b id="auth-toggle-link" style="cursor:pointer; color:#00C3AA;" onclick="toggleAuthMode()">
+                    สมัครสมาชิก
+                </b>
+            </div>
+        </div>
+    </div>
+</body>
+
+</html>

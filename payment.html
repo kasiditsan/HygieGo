@@ -1,0 +1,333 @@
+<!DOCTYPE html>
+<html lang="th">
+
+<head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>ชำระเงิน - HygieGo</title>
+    <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
+    <link href="https://fonts.googleapis.com/css2?family=Prompt:wght@300;400;500;600&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="style.css">
+    <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+    <script src="script.js"></script>
+
+    <style>
+        body {
+            background: #f5f7fa;
+            color: #333;
+        }
+        
+        .pay-wrap {
+            max-width: 1100px;
+            margin: 30px auto;
+            padding: 0 18px;
+        }
+        
+        .pay-grid {
+            display: grid;
+            grid-template-columns: 1.2fr 0.8fr;
+            gap: 18px;
+        }
+        
+        .pay-card {
+            background: #fff;
+            border: 1px solid #eee;
+            border-radius: 16px;
+            padding: 18px;
+            box-shadow: 0 10px 30px rgba(0, 0, 0, .06);
+        }
+        
+        .pay-title {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            gap: 10px;
+            flex-wrap: wrap;
+        }
+        
+        .muted {
+            color: #666;
+            font-size: 14px;
+        }
+        
+        .row {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 12px;
+        }
+        
+        .input {
+            width: 100%;
+            padding: 12px 12px;
+            border: 1px solid #ddd;
+            border-radius: 12px;
+            outline: none;
+        }
+        
+        .hr {
+            height: 1px;
+            background: #eee;
+            margin: 14px 0;
+        }
+        
+        .sum-row {
+            display: flex;
+            justify-content: space-between;
+            margin: 8px 0;
+        }
+        
+        .sum-row strong {
+            font-size: 18px;
+        }
+        
+        .btn-pay {
+            width: 100%;
+            padding: 14px;
+            border: none;
+            border-radius: 12px;
+            cursor: pointer;
+            font-weight: 600;
+            font-size: 16px;
+            transition: 0.2s;
+        }
+        
+        .btn-pay:hover {
+            transform: translateY(-2px);
+            opacity: 0.9;
+        }
+        
+        .btn-pay.primary {
+            background: #00c853;
+            color: #fff;
+            box-shadow: 0 4px 15px rgba(0, 200, 83, 0.3);
+        }
+        
+        .btn-pay.ghost {
+            background: #f2f4f7;
+            color: #333;
+            margin-top: 10px;
+        }
+        
+        .tag {
+            padding: 6px 10px;
+            border-radius: 999px;
+            background: #e8f3ff;
+            border: 1px solid #cfe5ff;
+            font-size: 12px;
+            font-weight: 600;
+        }
+        
+        @media (max-width: 900px) {
+            .pay-grid {
+                grid-template-columns: 1fr;
+            }
+        }
+        /* สไตล์สำหรับบัตรเครดิตจำลอง */
+        
+        .visual-card {
+            width: 100%;
+            max-width: 350px;
+            height: 200px;
+            background: linear-gradient(135deg, #1d1d1d, #434343);
+            border-radius: 16px;
+            padding: 20px;
+            color: white;
+            position: relative;
+            margin: 0 auto 20px;
+            box-shadow: 0 15px 35px rgba(0, 0, 0, 0.2);
+            font-family: 'Courier New', Courier, monospace;
+            /* ใช้ฟอนต์แนวบัตร */
+            transition: transform 0.6s;
+        }
+        
+        .card-chip {
+            width: 45px;
+            height: 35px;
+            background: linear-gradient(135deg, #f0d64d, #9d8302);
+            border-radius: 8px;
+            margin-bottom: 30px;
+        }
+        
+        .card-number-display {
+            font-size: 20px;
+            letter-spacing: 2px;
+            margin-bottom: 20px;
+            text-shadow: 2px 2px 2px rgba(0, 0, 0, 0.3);
+        }
+        
+        .card-bottom-info {
+            display: flex;
+            justify-content: space-between;
+            text-transform: uppercase;
+            font-size: 12px;
+        }
+        
+        .card-label {
+            font-size: 9px;
+            color: #ccc;
+            margin-bottom: 4px;
+        }
+        
+        .card-cvv-preview {
+            position: absolute;
+            right: 20px;
+            top: 50%;
+            font-style: italic;
+            opacity: 0.7;
+        }
+    </style>
+</head>
+
+<body>
+    <nav class="navbar" id="main-nav">
+        <div class="nav-container">
+            <div class="logo">
+                <a href="index.html" style="text-decoration:none; color:white;">HygieGo</a>
+            </div>
+            <div class="nav-links">
+                <a href="index.html">หน้าหลัก</a>
+                <a href="pricing.html">แพ็คเกจราคา</a>
+            </div>
+        </div>
+    </nav>
+
+    <div class="pay-wrap">
+        <div class="pay-title">
+            <div>
+                <h1 style="margin:0;">ชำระเงิน</h1>
+                <div class="muted">หน้านี้เป็น <b>Prototype</b> (จำลองการชำระเงิน)</div>
+            </div>
+            <span class="tag" id="pay-role">GUEST</span>
+        </div>
+
+        <div class="pay-grid" style="margin-top:16px;">
+            <div class="pay-card">
+                <h3 style="margin:0 0 10px;">ข้อมูลผู้ชำระ</h3>
+
+                <div class="row">
+                    <div>
+                        <label class="muted">ชื่อ-สกุล</label>
+                        <input class="input" id="payerName" placeholder="เช่น Admin Demo" />
+                    </div>
+                    <div>
+                        <label class="muted">อีเมล</label>
+                        <input class="input" id="payerEmail" placeholder="example@email.com" />
+                    </div>
+                </div>
+
+                <div class="hr"></div>
+
+                <h3 style="margin:0 0 10px;">ข้อมูลบัตร (จำลอง)</h3>
+                <div class="row">
+                    <div style="grid-column: 1 / -1;">
+                        <label class="muted">หมายเลขบัตร</label>
+                        <input class="input" id="cardNumber" placeholder="xxxx xxxx xxxx xxxx" maxlength="19" />
+                    </div>
+                    <div>
+                        <label class="muted">วันหมดอายุ</label>
+                        <input class="input" id="cardExp" value="12/34" />
+                    </div>
+                    <div>
+                        <label class="muted">CVV</label>
+                        <input class="input" id="cardCvv" value="123" />
+                    </div>
+                </div>
+
+                <div class="hr"></div>
+
+                <button class="btn-pay primary" onclick="window.payNow()">ยืนยันการชำระเงิน</button>
+                <button class="btn-pay ghost" onclick="location.href='pricing.html'">กลับไปเลือกแพ็คเกจ</button>
+
+                <div class="muted" style="margin-top:10px; font-size:12px;">
+                    * เมื่อชำระสำเร็จ ระบบจะอัปเดตสถานะผู้ใช้เป็น “ชำระแล้ว” และพากลับไปหน้า Dashboard
+                </div>
+            </div>
+
+            <div class="pay-card">
+                <h3 style="margin:0 0 10px;">สรุปรายการ</h3>
+
+                <div class="sum-row"><span>แพ็คเกจ</span><b id="sumPlan" style="text-align:right;">-</b></div>
+                <div class="sum-row"><span>รอบบิล</span><span id="sumTerm">ต่อปี</span></div>
+                <div class="hr"></div>
+                <div class="sum-row"><span>ยอดชำระ</span><strong id="sumPrice" style="color:#00c853; font-size:24px;">฿0</strong></div>
+
+                <div class="hr"></div>
+
+                <div class="muted">
+                    <i class="fas fa-check-circle" style="color:#00c853;"></i> ระบบนี้เป็น Prototype: ไม่ตัดเงินจริง<br />
+                    <i class="fas fa-check-circle" style="color:#00c853;"></i> เก็บข้อมูลการชำระใน localStorage เพื่อจำลองสถานะ
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        // 1. Initial Config
+        const HYGIE_URL = 'https://tfnvgsjfegrpsyuzthpn.supabase.co';
+        const HYGIE_KEY = 'sb_publishable_W6IMM3hM_0UK69ZMgaRrfA_PWJfL9j8'; // ใส่ Key ของคุณที่นี่ให้ถูกต้อง
+        const _client = supabase.createClient(HYGIE_URL, HYGIE_KEY);
+
+        // 2. Load User Info
+        const savedUser = localStorage.getItem("hygieUser");
+        let currentUser = savedUser ? JSON.parse(savedUser) : null;
+
+        if (currentUser) {
+            document.getElementById("pay-role").textContent = (currentUser.role || "USER").toUpperCase();
+            document.getElementById("payerName").value = currentUser.first_name || currentUser.restaurant_name || "";
+            document.getElementById("payerEmail").value = currentUser.email || "";
+        } else {
+            alert("Session หมดอายุ กรุณาเข้าสู่ระบบใหม่");
+            window.location.href = "index.html";
+        }
+
+        // 3. Get Plan Details
+        const params = new URLSearchParams(location.search);
+        const plan = params.get("plan") || "Unknown Plan";
+        const price = Number(params.get("price") || 0);
+
+        document.getElementById("sumPlan").textContent = plan;
+        document.getElementById("sumPrice").textContent = "฿" + price.toLocaleString();
+
+        // 4. Payment Function (Connects to Database)
+        window.payNow = async function() {
+            if (!currentUser) return;
+
+            const btn = document.querySelector('.btn-pay.primary');
+            btn.innerText = "กำลังประมวลผล...";
+            btn.disabled = true;
+
+            try {
+                // Update Database: เปลี่ยนสถานะเป็น paid
+                const {
+                    error
+                } = await _client
+                    .from('Users')
+                    .update({
+                        payment_status: 'paid',
+                        package_name: plan,
+                        package_price: price,
+                        paid_at: new Date().toISOString()
+                    })
+                    .eq('email', currentUser.email); // ใช้อีเมลเป็นตัวยืนยัน
+
+                if (error) throw error;
+
+                // Update LocalStorage: เพื่อให้หน้าเว็บรู้ทันที
+                currentUser.payment_status = 'paid';
+                currentUser.package_name = plan;
+                localStorage.setItem("hygieUser", JSON.stringify(currentUser));
+
+                alert("✅ ชำระเงินสำเร็จ! ยินดีต้อนรับสู่ Dashboard");
+                window.location.href = "dashboard.html";
+
+            } catch (err) {
+                console.error("Payment Error:", err);
+                alert("เกิดข้อผิดพลาด: " + err.message);
+                btn.innerText = "ยืนยันการชำระเงิน";
+                btn.disabled = false;
+            }
+        };
+    </script>
+</body>
+
+</html>
