@@ -53,7 +53,7 @@ const db = {
         console.log("Attempting login for:", email);
         try {
             // 1. เช็ค Users
-            let { data: user } = await window._client.from('Users').select('*').eq('email', email).single();
+            let { data: user } = await window._client.from('users').select('*').eq('email', email).single();
             if (user) {
                 if (user.password_hash === password) {
                     this.saveSession(user, 'user');
